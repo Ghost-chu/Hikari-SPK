@@ -1,0 +1,24 @@
+server:
+  port: 6868
+  compression:
+    enabled: true
+    mime-types: text/html,text/xml,text/plain,text/css,text/javascript,application/javascript,application/json
+
+hikari-spk:
+  site:
+    name: Another HikariSPK Site
+    description: Another HikariSPK Site
+    base-url: "http://example.com:6868"
+  paths:
+    cache: cache
+    models: conf/synology_models.yaml
+    packages: packages
+  packages:
+    file-mask: "*.spk"
+    maintainer: "Hikari-SPK"
+    maintainer-url: ""
+    distributor: "Hikari-SPK"
+    distributor-url: ""
+    support-url: ""
+    allow-direct-downloads: false
+  excludedSynoServices: "apache-sys apache-web mdns samba db applenetwork cron nfs firewall"

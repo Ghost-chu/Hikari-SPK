@@ -1,0 +1,298 @@
+armada370:
+    armada370:
+        - DS114
+        - DS115j
+        - DS213j
+        - DS214se
+        - DS216se
+        - DS414slim
+        - EDS14
+        - RS214
+
+armada375:
+    armada375:
+        - DS115
+        - DS215j
+
+armada37xx:
+    armada37xx:
+        - DS119j
+        - DS120j
+
+armada38x:
+    armada38x:
+        - DS116
+        - DS216
+        - DS216j
+        - DS218j
+        - DS416j
+        - DS416slim
+        - RS217
+        - RS816
+        - DS419slim
+
+armadaxp:
+    armadaxp:
+        - DS214+
+        - DS214
+        - DS414
+        - RS214
+        - RS814
+        - RS815
+
+armv5:
+    88f5281:
+        - CS407
+        - DS107+
+        - DS207+
+        - RS407
+    88f6281:
+        - DS109
+        - DS110j
+        - DS112j
+        - DS209
+        - DS210j
+        - DS211j
+        - DS212j
+        - DS409
+        - DS409slim
+        - DS410j
+        - DS411j
+        - RS409
+    88f6282:
+        - DS111
+        - DS112
+        - DS112+
+        - DS211
+        - DS211+
+        - DS212
+        - DS212+
+        - DS213
+        - DS213air
+        - DS411
+        - DS411slim
+        - DS413j
+        - RS212
+        - RS411
+        - RS812
+
+armv7:
+    alpine:
+        - DS715
+        - DS1515
+        - DS1517
+        - DS1817
+        - DS2015xs
+    alpine4k:
+        - DS215+
+        - DS416
+    ipq806x:
+        - RT2600ac
+    northstarplus:
+        - RT1900ac
+        
+armv8:
+    rtd1296:
+        - DS118
+        - DS218
+        - DS218play
+        - DS220j
+        - DS418j
+        - DS418
+        - DS420j
+        - RS819
+        
+comcerto2k:
+    comcerto2k:
+        - DS214air
+        - DS414j
+
+hi3535:
+    hi3535:
+        - NVR216
+
+i686:
+    evansport:
+        - DS214play
+        - DS414play
+        - DS415play
+
+monaco:
+    monaco:
+        - DS216play
+
+ppc:
+    powerpc:
+        - DS101
+        - DS101j
+    ppc824x:
+        - CS406
+        - CS406e
+        - CS407e
+        - DS101g+
+        - DS106
+        - DS106e
+        - DS106j
+        - DS106x
+        - DS107
+        - DS107e
+        - DS108j
+        - DS109j
+        - DS207.128
+        - DS207
+        - DS209j
+        - DS406
+        - DS406e
+        - DS407e
+        - RS406
+    ppc853x:
+        - DS109+
+        - DS110+
+        - DS209+
+        - DS209+II
+        - DS210+
+        - DS409+
+        - DS410
+        - DS508
+        - DS509+
+        - RS408(RP)
+        - RS409(RP)+
+    ppc854x:
+        - DS408
+        - DS508
+        - RS408(RP)+
+    qoriq:
+        - DS213+
+        - DS413
+
+x86_64:
+    avoton:
+        - DS415+
+        - DS1515+
+        - DS1517+
+        - DS1815+
+        - DS1817+
+        - DS2415+
+        - RS815(RP)+
+        - RS1219+
+        - RS2416(RP)+
+        - RS2416+/RS2416RP+
+        - RS815+/RS815RP+
+        - RS818+
+        - RS818RP+
+    braswell:
+        - DS216+
+        - DS216+II
+        - DS416play
+        - DS716+
+        - DS716+II
+        - DS916+
+    broadwell:
+        - DS3617xs
+        - FS2017
+        - FS3400
+        - RS1619xs+
+        - RS18017xs+
+        - RS3617RPxs
+        - RS3617xs+
+        - RS3617(RP)xs
+        - RS3618xs
+        - RS4017xs+
+        - RS18017xs+
+    broadwellnk:
+        - DS1621xs+
+        - DS3018xs
+        - FS1018
+        - FS3600
+        - RS3621RPxs
+        - RS3621xs+
+        - RS4021xs+
+        - SA3400
+        - SA3600
+    broadwellntbap:
+        - SA3200D
+    apollolake:
+        - DS1019+
+        - DS218+
+        - DS418play
+        - DS620slim
+        - DS718+
+        - DS918+
+    bromolow:
+        - DS3611xs
+        - DS3612xs
+        - DS3615xs
+        - RC18015xs+
+        - RS10613xs+
+        - RS10815xs+
+        - RS18016xs+
+        - RS3411(RP)xs
+        - RS3412(RP)xs
+        - RS3411xs/RS3411RPxs
+        - RS3412xs/RS3412RPxs
+        - RS3413xs+
+        - RS3614xs+
+        - RS3614(RP)xs
+        - RS3614xs/RS3614RPxs
+        - RS3617xs
+    cedarview:
+        - DS1512+
+        - DS1513+
+        - DS1812+
+        - DS1813+
+        - DS2413+
+        - RS2414(RP)+
+        - DS412+
+        - DS713+
+        - RS2212/RS2212+
+        - RS2212+/RS2212RP+
+        - RS2414(RP)
+        - RS2414(RP)+
+        - RS2414+/RS2414RP+
+        - RS812(RP)+
+        - RS812+/RS812RP+
+        - RS814(RP)+
+        - RS814+/RS814RP+
+    denverton:
+        - DS1618+
+        - DS1819+
+        - DS2419+
+        - DVA3219
+        - RS2418+/RS2418RP+
+        - RS2818RP+
+        - RS820+/RS820RP+
+    geminilake:
+        - DS220+
+        - DS420+
+        - DS720+
+        - DS920+
+        - DS1520+
+    dockerx64:
+        - DockerDSM
+    grantley:
+        - FS3017
+    kvmx64:
+        - VirtualDSM
+    purley:
+        - FS6400
+    v1000:
+        - DS1621+
+        - DS1821+
+        - RS1221+
+        - RS1221RP+
+        - RS2421+
+        - RS2421RP+
+        - RS2821RP+
+    x86:
+        - DS1010+
+        - DS1511+
+        - DS2411+
+        - DS411+
+        - DS411+II
+        - DS710+
+        - DS712+
+        - RS2211+
+        - RS2211(RP)+
+        - RS2211+/RS2211RP+
+        - RS810(RP)+
+        - RS810+/RS810RP+
