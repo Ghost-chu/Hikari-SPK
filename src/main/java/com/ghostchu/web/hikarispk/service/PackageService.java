@@ -37,28 +37,39 @@ public class PackageService {
         loadPackages();
         FileAlterationObserver observer = new FileAlterationObserver(packageFolderPath);
         observer.addListener(new FileChangeListener(this, fileMask));
-        FileAlterationMonitor monitor = new FileAlterationMonitor(5000, observer);
+        FileAlterationMonitor monitor = new FileAlterationMonitor(10000, observer);
         monitor.start();
     }
 
-    private void loadPackages() throws Exception {
+    private void loadPackages() {
         LOGGER.info("Loading packages from disk...");
         long start = System.currentTimeMillis();
         File scanFolder = new File(packageFolderPath);
         if (!scanFolder.exists()) scanFolder.mkdirs();
         File[] files = scanFolder.listFiles((dir, name) -> name.matches(Glob.createRegexFromGlob(fileMask)));
         if (files == null) return;
-        Map<File, SynoPackage> packages = new ConcurrentHashMap<>();
+        BiMap<File, SynoPackage> newPackages = HashBiMap.create(new ConcurrentHashMap<>());
+        bakePackages(newPackages, files);
+        this.discoveredPackages = newPackages;
+        LOGGER.info("Loaded {} packages in {}ms.", this.discoveredPackages.size(), System.currentTimeMillis() - start);
+    }
+
+    private long bakePackages(Map<File, SynoPackage> packages, File[] files) {
+        long start = System.currentTimeMillis();
         Arrays.stream(files).parallel().forEach(file -> {
             try {
-                packages.put(file, parsePackage(file));
+                if (file.exists()) {
+                    packages.put(file, parsePackage(file));
+                } else {
+                    packages.remove(file);
+                }
             } catch (Exception e) {
                 LOGGER.warn("Failed to parse package file: " + file.getName() + " - " + e.getMessage(), e);
             }
         });
-        this.discoveredPackages = HashBiMap.create(packages);
-        LOGGER.info("Loaded {} packages in {}ms.", packages.size(), System.currentTimeMillis() - start);
+        return System.currentTimeMillis() - start;
     }
+
 
     public BiMap<File, SynoPackage> getDiscoveredPackages() {
         return HashBiMap.create(discoveredPackages);
@@ -77,6 +88,7 @@ public class PackageService {
         private final PackageService service;
         private final String fileMask;
         private boolean anyChanges = false;
+        private List<File> changedFiles = new ArrayList<>();
 
         public FileChangeListener(PackageService service, String fileMask) {
             this.service = service;
@@ -87,6 +99,7 @@ public class PackageService {
         public void onFileChange(File file) {
             if (file.getName().matches(Glob.createRegexFromGlob(fileMask))) {
                 anyChanges = true;
+                this.changedFiles.add(file);
                 LOGGER.info("DetectedFile {} modified.", file.getName());
             }
         }
@@ -95,6 +108,7 @@ public class PackageService {
         public void onFileCreate(File file) {
             if (file.getName().matches(Glob.createRegexFromGlob(fileMask))) {
                 anyChanges = true;
+                this.changedFiles.add(file);
                 LOGGER.info("File {} created.", file.getName());
             }
         }
@@ -103,6 +117,7 @@ public class PackageService {
         public void onFileDelete(File file) {
             if (file.getName().matches(Glob.createRegexFromGlob(fileMask))) {
                 anyChanges = true;
+                this.changedFiles.add(file);
                 LOGGER.info("File {} deleted.", file.getName());
             }
         }
@@ -113,7 +128,11 @@ public class PackageService {
             if (anyChanges) {
                 anyChanges = false;
                 LOGGER.info("Detected package file changes! Reloading packages information...");
-                service.loadPackages();
+                File[] changedFilesArray = this.changedFiles.toArray(new File[0]);
+                this.changedFiles.clear();
+                long cost = service.bakePackages(service.discoveredPackages, changedFilesArray);
+                LOGGER.info("Reloaded packages information for {} package changes, total {} packages available, used {}ms.", changedFilesArray.length, service.discoveredPackages.size(), cost);
+
             }
         }
     }
