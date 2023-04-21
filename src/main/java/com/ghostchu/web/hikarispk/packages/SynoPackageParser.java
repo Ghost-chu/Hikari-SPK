@@ -33,7 +33,6 @@ public class SynoPackageParser {
 
 
     private void parseInfo(String infoData) {
-
         Map<String, String> info = new LinkedHashMap<>();
         for (String s : infoData.split("\n")) {
             if (s.startsWith("#") || s.isBlank()) {

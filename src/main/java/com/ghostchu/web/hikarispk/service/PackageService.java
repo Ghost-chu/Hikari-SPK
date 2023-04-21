@@ -16,13 +16,13 @@ import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.*;
 
 @Service
 public class PackageService {
+    private static final ExecutorService executorService = Executors.newFixedThreadPool(2);
     private final Logger LOGGER = LoggerFactory.getLogger("PackageService");
     private final String packageFolderPath;
     private final String fileMask;
@@ -56,18 +56,20 @@ public class PackageService {
 
     private long bakePackages(Map<File, SynoPackage> packages, File[] files) {
         long start = System.currentTimeMillis();
-        Arrays.stream(files).parallel().forEach(file -> {
+        for (File file : files) {
             try {
                 if (file.exists()) {
                     SynoPackage synoPackage = parsePackage(file);
-                    packages.put(file, synoPackage);
+                    if (synoPackage != null) {
+                        packages.put(file, synoPackage);
+                    }
                 } else {
                     packages.remove(file);
                 }
             } catch (Exception e) {
                 LOGGER.warn("Failed to parse package file: " + file.getName() + " - " + e.getMessage(), e);
             }
-        });
+        }
         return System.currentTimeMillis() - start;
     }
 
@@ -81,7 +83,13 @@ public class PackageService {
     }
 
     public SynoPackage parsePackage(File file) throws Exception {
-        return new SynoPackageParser(new File(cachePath), file).getSynoPackage();
+        Future<SynoPackage> future = executorService.submit(() -> new SynoPackageParser(new File(cachePath), file).getSynoPackage());
+        try {
+            return future.get(30, TimeUnit.SECONDS);
+        } catch (TimeoutException exception) {
+            LOGGER.warn("The package {} used too much time for parsing! Skipping...", file.getName());
+            return null;
+        }
     }
 
     public static class FileChangeListener extends FileAlterationListenerAdaptor {
