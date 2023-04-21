@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -17,7 +18,7 @@ import java.util.Map;
 @NoArgsConstructor
 @Data
 public class SynoPackage {
-    private static final Logger logger = org.slf4j.LoggerFactory.getLogger(SynoPackage.class);
+    private static final Logger logger = LoggerFactory.getLogger(SynoPackage.class);
     private String fileName;
     private String packageId;
     private String version;

@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ghostchu.web.hikarispk.packages.SynoPackage;
 import com.ghostchu.web.hikarispk.service.PackageFilterService;
 import com.ghostchu.web.hikarispk.service.PackageService;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.constraints.NotBlank;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,8 +41,6 @@ public class SynoController {
     private String distributorUrl;
     @Value("${hikari-spk.packages.support-url}")
     private String supportUrl;
-    @Autowired
-    private HttpServletRequest request;
 
     @GetMapping("/spk")
     @ResponseBody

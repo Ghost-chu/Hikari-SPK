@@ -22,7 +22,6 @@ import java.util.Map;
 public class PackageFilterService {
     private static final Logger LOGGER = LoggerFactory.getLogger("PackageFilterService");
 
-    private final CommentedConfigurationNode familyList;
     private final Map<String, String> family2ArchMap = new HashMap<>();
 
     public PackageFilterService(@Value("${hikari-spk.paths.models}") String deviceListPath) throws ConfigurateException, FileNotFoundException {
@@ -31,7 +30,7 @@ public class PackageFilterService {
             throw new FileNotFoundException("Cannot found file: " + deviceListPath + "!");
         }
         YamlConfigurationLoader loader = YamlConfigurationLoader.builder().file(modelsFile).build();
-        familyList = loader.load();
+        CommentedConfigurationNode familyList = loader.load();
         LOGGER.info("Loading filter from file {}...", deviceListPath);
         for (CommentedConfigurationNode entry : familyList.childrenMap().values()) {
             String arch = String.valueOf(entry.key());
