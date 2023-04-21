@@ -59,7 +59,8 @@ public class PackageService {
         Arrays.stream(files).parallel().forEach(file -> {
             try {
                 if (file.exists()) {
-                    packages.put(file, parsePackage(file));
+                    SynoPackage synoPackage = parsePackage(file);
+                    packages.put(file, synoPackage);
                 } else {
                     packages.remove(file);
                 }
@@ -87,8 +88,8 @@ public class PackageService {
         private final Logger LOGGER = LoggerFactory.getLogger("FileChangeListener");
         private final PackageService service;
         private final String fileMask;
+        private final List<File> changedFiles = new ArrayList<>();
         private boolean anyChanges = false;
-        private List<File> changedFiles = new ArrayList<>();
 
         public FileChangeListener(PackageService service, String fileMask) {
             this.service = service;
@@ -100,7 +101,7 @@ public class PackageService {
             if (file.getName().matches(Glob.createRegexFromGlob(fileMask))) {
                 anyChanges = true;
                 this.changedFiles.add(file);
-                LOGGER.info("DetectedFile {} modified.", file.getName());
+                LOGGER.info("[#] {}", file.getName());
             }
         }
 
@@ -109,7 +110,7 @@ public class PackageService {
             if (file.getName().matches(Glob.createRegexFromGlob(fileMask))) {
                 anyChanges = true;
                 this.changedFiles.add(file);
-                LOGGER.info("File {} created.", file.getName());
+                LOGGER.info("[+] {}", file.getName());
             }
         }
 
@@ -118,7 +119,7 @@ public class PackageService {
             if (file.getName().matches(Glob.createRegexFromGlob(fileMask))) {
                 anyChanges = true;
                 this.changedFiles.add(file);
-                LOGGER.info("File {} deleted.", file.getName());
+                LOGGER.info("[-] {}", file.getName());
             }
         }
 
@@ -127,7 +128,6 @@ public class PackageService {
         public void onStop(FileAlterationObserver observer) {
             if (anyChanges) {
                 anyChanges = false;
-                LOGGER.info("Detected package file changes! Reloading packages information...");
                 File[] changedFilesArray = this.changedFiles.toArray(new File[0]);
                 this.changedFiles.clear();
                 long cost = service.bakePackages(service.discoveredPackages, changedFilesArray);

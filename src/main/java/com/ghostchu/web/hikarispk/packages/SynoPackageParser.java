@@ -102,24 +102,34 @@ public class SynoPackageParser {
         }
         TarArchiveEntry entry;
         boolean foundINFO = false;
+        boolean foundIcon = false;
+        boolean found256Icon = false;
+        int loopTimes = 0;
         while ((entry = (TarArchiveEntry) tarArchive.getNextEntry()) != null) {
+            loopTimes++;
+            if (loopTimes > 3500 && foundINFO && foundIcon && found256Icon) {
+                LOGGER.info("Too big package, skipping [{}] screenshot scanning! ", synoPackageFile.getName());
+                break;
+            }
             if (entry.isDirectory()) {
-                if (entry.getName().equals("WIZARD_UIFILES/")) {
+                if (!synoPackage.isHasWizardDir() && entry.getName().equals("WIZARD_UIFILES/")) {
                     synoPackage.setHasWizardDir(true);
                 }
                 continue;
             }
-            if (entry.getName().equals("INFO")) {
+            if (!foundINFO && entry.getName().equals("INFO")) {
                 foundINFO = true;
                 parseInfo(new String(tarArchive.readAllBytes(), StandardCharsets.UTF_8));
             }
             if (entry.getName().matches(Glob.createRegexFromGlob("*_screen_*.png"))) {
                 synoPackage.getScreenshots().add(saveCacheFile(tarArchive, packageCacheDirectory, "snapshots"));
             }
-            if (entry.getName().equals("PACKAGE_ICON.PNG")) {
+            if (!foundIcon && entry.getName().equals("PACKAGE_ICON.PNG")) {
+                foundIcon = true;
                 synoPackage.setPackageIcon(saveCacheFile(tarArchive, packageCacheDirectory, "package-icons"));
             }
-            if (entry.getName().equals("PACKAGE_ICON_256.PNG")) {
+            if (!found256Icon && entry.getName().equals("PACKAGE_ICON_256.PNG")) {
+                found256Icon = true;
                 synoPackage.setPackageIcon256(saveCacheFile(tarArchive, packageCacheDirectory, "package-icons"));
             }
         }
