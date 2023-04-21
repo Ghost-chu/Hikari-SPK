@@ -35,13 +35,14 @@ public class PackageService {
         this.fileMask = fileMask;
         loadPackages();
         FileAlterationObserver observer = new FileAlterationObserver(packageFolderPath);
-        observer.addListener(new FileChangeListener(this));
+        observer.addListener(new FileChangeListener(this, fileMask));
         FileAlterationMonitor monitor = new FileAlterationMonitor(5000, observer);
         monitor.start();
     }
 
     private void loadPackages() throws Exception {
         LOGGER.info("Loading packages from disk...");
+        long start = System.currentTimeMillis();
         File scanFolder = new File(packageFolderPath);
         if (!scanFolder.exists()) scanFolder.mkdirs();
         File[] files = scanFolder.listFiles((dir, name) -> name.matches(Glob.createRegexFromGlob(fileMask)));
@@ -55,6 +56,7 @@ public class PackageService {
             }
         }
         this.discoveredPackages = packages;
+        LOGGER.info("Loaded {} packages in {}ms.", packages.size(), System.currentTimeMillis() - start);
     }
 
     public BiMap<File, SynoPackage> getDiscoveredPackages() {
@@ -72,28 +74,36 @@ public class PackageService {
     public static class FileChangeListener extends FileAlterationListenerAdaptor {
         private final Logger LOGGER = LoggerFactory.getLogger("FileChangeListener");
         private final PackageService service;
+        private final String fileMask;
         private boolean anyChanges = false;
 
-        public FileChangeListener(PackageService service) {
+        public FileChangeListener(PackageService service, String fileMask) {
             this.service = service;
+            this.fileMask = fileMask;
         }
 
         @Override
         public void onFileChange(File file) {
-            anyChanges = true;
-            LOGGER.info("DetectedFile {} modified.", file.getName());
+            if (file.getName().matches(Glob.createRegexFromGlob(fileMask))) {
+                anyChanges = true;
+                LOGGER.info("DetectedFile {} modified.", file.getName());
+            }
         }
 
         @Override
         public void onFileCreate(File file) {
-            anyChanges = true;
-            LOGGER.info("File {} created.", file.getName());
+            if (file.getName().matches(Glob.createRegexFromGlob(fileMask))) {
+                anyChanges = true;
+                LOGGER.info("File {} created.", file.getName());
+            }
         }
 
         @Override
         public void onFileDelete(File file) {
-            anyChanges = true;
-            LOGGER.info("File {} deleted.", file.getName());
+            if (file.getName().matches(Glob.createRegexFromGlob(fileMask))) {
+                anyChanges = true;
+                LOGGER.info("File {} deleted.", file.getName());
+            }
         }
 
         @SneakyThrows
