@@ -15,9 +15,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Service
@@ -47,15 +48,15 @@ public class PackageService {
         if (!scanFolder.exists()) scanFolder.mkdirs();
         File[] files = scanFolder.listFiles((dir, name) -> name.matches(Glob.createRegexFromGlob(fileMask)));
         if (files == null) return;
-        BiMap<File, SynoPackage> packages = HashBiMap.create(new ConcurrentHashMap<>());
-        for (File file : files) {
+        Map<File, SynoPackage> packages = new ConcurrentHashMap<>();
+        Arrays.stream(files).parallel().forEach(file -> {
             try {
                 packages.put(file, parsePackage(file));
-            } catch (IOException e) {
+            } catch (Exception e) {
                 LOGGER.warn("Failed to parse package file: " + file.getName() + " - " + e.getMessage(), e);
             }
-        }
-        this.discoveredPackages = packages;
+        });
+        this.discoveredPackages = HashBiMap.create(packages);
         LOGGER.info("Loaded {} packages in {}ms.", packages.size(), System.currentTimeMillis() - start);
     }
 
