@@ -25,4 +25,6 @@ https://<base-url>/spk
 例如：
 当 `base-url` 被设置为 `https://myspk.com:7777` 时，你应该输入 `https://myspk.com:7777/spk`
 
+## 效果示例
 
+![QQ图片20230422202417](https://user-images.githubusercontent.com/30802565/233784596-130146f1-52ea-46da-bca2-2d48288e5770.jpg)
