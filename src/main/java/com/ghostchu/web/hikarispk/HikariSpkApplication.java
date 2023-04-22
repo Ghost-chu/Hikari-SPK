@@ -15,7 +15,11 @@ public class HikariSpkApplication {
         File file = new File("application.yml");
         if (!file.exists()) {
             try (InputStream stream = HikariSpkApplication.class.getResourceAsStream("/application.yml")) {
-                Files.copy(stream, file.toPath());
+                if (stream == null) {
+                    System.err.println("Cannot copy application.yml from jar to " + file.getAbsolutePath() + ", stream null");
+                } else {
+                    Files.copy(stream, file.toPath());
+                }
             } catch (IOException e) {
                 System.err.println("Cannot copy application.yml from jar to " + file.getAbsolutePath());
             }
