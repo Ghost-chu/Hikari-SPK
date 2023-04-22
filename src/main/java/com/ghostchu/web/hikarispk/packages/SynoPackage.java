@@ -18,7 +18,7 @@ import java.util.Map;
 @NoArgsConstructor
 @Data
 public class SynoPackage {
-    private static final Logger logger = LoggerFactory.getLogger(SynoPackage.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SynoPackage.class);
     private String fileName;
     private String packageId;
     private String version;
@@ -81,7 +81,5 @@ public class SynoPackage {
         Semver packageSemver = new Semver(this.osMinVer, Semver.SemverType.LOOSE);
         Semver firmwareSemver = new Semver(firmware, Semver.SemverType.LOOSE);
         return packageSemver.isLowerThanOrEqualTo(firmwareSemver);
-
-
     }
 }

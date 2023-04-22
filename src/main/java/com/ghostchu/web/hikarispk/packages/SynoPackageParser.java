@@ -107,7 +107,7 @@ public class SynoPackageParser {
         while ((entry = (TarArchiveEntry) tarArchive.getNextEntry()) != null) {
             loopTimes++;
             if (loopTimes > 3500 && foundINFO && foundIcon && found256Icon) {
-                LOGGER.info("Too big package, skipping [{}] screenshot scanning! ", synoPackageFile.getName());
+                LOGGER.warn("Too big package, skipping [{}] screenshot scanning! ", synoPackageFile.getName());
                 break;
             }
             if (entry.isDirectory()) {
@@ -135,8 +135,6 @@ public class SynoPackageParser {
         if (!foundINFO) {
             throw new IOException("Bad package file, INFO file not found");
         }
-
-
     }
 
     private File saveCacheFile(TarArchiveInputStream tarArchive, File packageCacheDirectory, String category) throws IOException {

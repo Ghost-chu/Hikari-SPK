@@ -1,5 +1,6 @@
 package com.ghostchu.web.hikarispk.service;
 
+import com.ghostchu.web.hikarispk.config.HikariSPKConfig;
 import com.ghostchu.web.hikarispk.packages.SynoPackage;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -8,7 +9,7 @@ import org.spongepowered.configurate.CommentedConfigurationNode;
 import org.spongepowered.configurate.ConfigurateException;
 import org.spongepowered.configurate.serialize.SerializationException;
 import org.spongepowered.configurate.yaml.YamlConfigurationLoader;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
@@ -21,26 +22,23 @@ import java.util.Map;
 @Service
 public class PackageFilterService {
     private static final Logger LOGGER = LoggerFactory.getLogger("PackageFilterService");
-
     private final Map<String, String> family2ArchMap = new HashMap<>();
 
-    public PackageFilterService(@Value("${hikari-spk.paths.models}") String deviceListPath) throws ConfigurateException, FileNotFoundException {
-        File modelsFile = new File(deviceListPath);
+    public PackageFilterService(@Autowired HikariSPKConfig hikariSPKConfig) throws ConfigurateException, FileNotFoundException {
+        File modelsFile = new File(hikariSPKConfig.getDeviceListPath());
         if (!modelsFile.exists()) {
-            throw new FileNotFoundException("Cannot found file: " + deviceListPath + "!");
+            throw new FileNotFoundException("Cannot found file: " + modelsFile.getAbsolutePath() + "!");
         }
         YamlConfigurationLoader loader = YamlConfigurationLoader.builder().file(modelsFile).build();
         CommentedConfigurationNode familyList = loader.load();
-        LOGGER.info("Loading filter from file {}...", deviceListPath);
+        LOGGER.info("Loading filter from file {}...", modelsFile.getAbsolutePath());
         for (CommentedConfigurationNode entry : familyList.childrenMap().values()) {
             String arch = String.valueOf(entry.key());
             for (CommentedConfigurationNode family : entry.childrenMap().values()) {
                 family2ArchMap.put(String.valueOf(family.key()), arch);
-                LOGGER.info("Found family {} belongs to arch {}", family.key(), arch);
             }
         }
-
-
+        LOGGER.info("Found {} synology families.", family2ArchMap.size());
     }
 
     public List<SynoPackage> filter(List<SynoPackage> packages, @Nullable String archFilter, @Nullable String channelFilter, @Nullable String firmwareVersionFilter) throws SerializationException {

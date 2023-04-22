@@ -1,5 +1,6 @@
 package com.ghostchu.web.hikarispk.service;
 
+import com.ghostchu.web.hikarispk.config.HikariSPKConfig;
 import com.ghostchu.web.hikarispk.packages.SynoPackage;
 import com.ghostchu.web.hikarispk.packages.SynoPackageParser;
 import com.ghostchu.web.hikarispk.util.Glob;
@@ -11,10 +12,11 @@ import org.apache.commons.io.monitor.FileAlterationMonitor;
 import org.apache.commons.io.monitor.FileAlterationObserver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -22,21 +24,17 @@ import java.util.concurrent.*;
 
 @Service
 public class PackageService {
-    private static final ExecutorService executorService = Executors.newFixedThreadPool(2);
-    private final Logger LOGGER = LoggerFactory.getLogger("PackageService");
-    private final String packageFolderPath;
-    private final String fileMask;
-    private final String cachePath;
+    private static final ExecutorService PACKAGE_PARSING_EXECUTOR = Executors.newFixedThreadPool(2);
+    private static final Logger LOGGER = LoggerFactory.getLogger("PackageService");
+    private final HikariSPKConfig hikariSPKConfig;
     private BiMap<File, SynoPackage> discoveredPackages = HashBiMap.create(new ConcurrentHashMap<>());
 
 
-    public PackageService(@Value("${hikari-spk.paths.packages}") String packageFolderPath, @Value("${hikari-spk.packages.file-mask}") String fileMask, @Value("${hikari-spk.paths.cache}") String cachePath) throws Exception {
-        this.packageFolderPath = packageFolderPath;
-        this.cachePath = cachePath;
-        this.fileMask = fileMask;
+    public PackageService(@Autowired HikariSPKConfig hikariSPKConfig) throws Exception {
+        this.hikariSPKConfig = hikariSPKConfig;
         loadPackages();
-        FileAlterationObserver observer = new FileAlterationObserver(packageFolderPath);
-        observer.addListener(new FileChangeListener(this, fileMask));
+        FileAlterationObserver observer = new FileAlterationObserver(hikariSPKConfig.getPackageFolderPath());
+        observer.addListener(new FileChangeListener(this, hikariSPKConfig.getFileMask()));
         FileAlterationMonitor monitor = new FileAlterationMonitor(10000, observer);
         monitor.start();
     }
@@ -44,9 +42,9 @@ public class PackageService {
     private void loadPackages() {
         LOGGER.info("Loading packages from disk...");
         long start = System.currentTimeMillis();
-        File scanFolder = new File(packageFolderPath);
+        File scanFolder = new File(hikariSPKConfig.getPackageFolderPath());
         if (!scanFolder.exists()) scanFolder.mkdirs();
-        File[] files = scanFolder.listFiles((dir, name) -> name.matches(Glob.createRegexFromGlob(fileMask)));
+        File[] files = scanFolder.listFiles((dir, name) -> name.matches(Glob.createRegexFromGlob(hikariSPKConfig.getFileMask())));
         if (files == null) return;
         BiMap<File, SynoPackage> newPackages = HashBiMap.create(new ConcurrentHashMap<>());
         bakePackages(newPackages, files);
@@ -59,7 +57,7 @@ public class PackageService {
         for (File file : files) {
             try {
                 if (file.exists()) {
-                    SynoPackage synoPackage = parsePackage(file);
+                    SynoPackage synoPackage = parsePackage(PackageService.PACKAGE_PARSING_EXECUTOR, file);
                     if (synoPackage != null) {
                         packages.put(file, synoPackage);
                     }
@@ -67,6 +65,12 @@ public class PackageService {
                     packages.remove(file);
                 }
             } catch (Exception e) {
+                if (e instanceof IOException) {
+                    if (e.getMessage().equals("Truncated TAR archive")) {
+                        LOGGER.warn("Truncated TAR archive: {}, sync not finished or tar file corrupted, skipped.", file.getName());
+                        continue;
+                    }
+                }
                 LOGGER.warn("Failed to parse package file: " + file.getName() + " - " + e.getMessage(), e);
             }
         }
@@ -82,8 +86,8 @@ public class PackageService {
         return new ArrayList<>(discoveredPackages.values());
     }
 
-    public SynoPackage parsePackage(File file) throws Exception {
-        Future<SynoPackage> future = executorService.submit(() -> new SynoPackageParser(new File(cachePath), file).getSynoPackage());
+    public SynoPackage parsePackage(ExecutorService executorService, File file) throws Exception {
+        Future<SynoPackage> future = executorService.submit(() -> new SynoPackageParser(new File(hikariSPKConfig.getCachePath()), file).getSynoPackage());
         try {
             return future.get(30, TimeUnit.SECONDS);
         } catch (TimeoutException exception) {
@@ -140,7 +144,6 @@ public class PackageService {
                 this.changedFiles.clear();
                 long cost = service.bakePackages(service.discoveredPackages, changedFilesArray);
                 LOGGER.info("Reloaded packages information for {} package changes, total {} packages available, used {}ms.", changedFilesArray.length, service.discoveredPackages.size(), cost);
-
             }
         }
     }

@@ -1,6 +1,7 @@
 package com.ghostchu.web.hikarispk.controller;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.ghostchu.web.hikarispk.config.HikariSPKConfig;
 import com.ghostchu.web.hikarispk.packages.SynoPackage;
 import com.ghostchu.web.hikarispk.service.PackageFilterService;
 import com.ghostchu.web.hikarispk.service.PackageService;
@@ -9,7 +10,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spongepowered.configurate.serialize.SerializationException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -27,25 +27,13 @@ public class SynoController {
     private PackageService packageService;
     @Autowired
     private PackageFilterService packageFilterService;
-    @Value("${hikari-spk.site.base-url}")
-    private String baseUrl;
-    @Value("${hikari-spk.excludedSynoServices}")
-    private String excludedSynoServices;
-    @Value("${hikari-spk.packages.maintainer}")
-    private String maintainer;
-    @Value("${hikari-spk.packages.maintainer-url}")
-    private String maintainerUrl;
-    @Value("${hikari-spk.packages.distributor}")
-    private String distributor;
-    @Value("${hikari-spk.packages.distributor-url}")
-    private String distributorUrl;
-    @Value("${hikari-spk.packages.support-url}")
-    private String supportUrl;
+    @Autowired
+    private HikariSPKConfig hikariSPKConfig;
+
 
     @GetMapping("/spk")
     @ResponseBody
     public Object spkQuery(@RequestParam("language") String language, @NotBlank @RequestParam("timezone") String timezone, @NotBlank @RequestParam("unique") String unique, @NotBlank @RequestParam("arch") String arch, @NotBlank @RequestParam("major") int major, @NotBlank @RequestParam("minor") int minor, @NotBlank @RequestParam("build") int build, @NotBlank @RequestParam("package_update_channel") String packageUpdateChannel) throws SerializationException {
-
         long start = System.currentTimeMillis();
         language = language.trim();
         timezone = timezone.trim();
@@ -60,7 +48,7 @@ public class SynoController {
         packageList = packageFilterService.filter(packageList, arch, packageUpdateChannel, firmwareVersion);
         List<JsonOutput> outputs = new ArrayList<>();
         for (SynoPackage pkg : packageList) {
-            outputs.add(new JsonOutput(this, pkg, language));
+            outputs.add(new JsonOutput(hikariSPKConfig, pkg, language));
         }
         long end = System.currentTimeMillis();
         LOGGER.info("Synology client request accepted ({}ms, {} packages): language={}, timezone={}, " +
@@ -79,7 +67,7 @@ public class SynoController {
         @JsonProperty("desc")
         public String description;
         @JsonProperty("price")
-        public Integer price = 0;
+        public Integer price;
         @JsonProperty("download_count")
         public Long downloadCount;
         @JsonProperty("recent_download_count")
@@ -121,9 +109,9 @@ public class SynoController {
         @JsonProperty("thirdparty")
         public Boolean thirdParty;
         @JsonProperty("category")
-        public Integer category = 0;
+        public Integer category;
         @JsonProperty("subcategory")
-        public Integer subcategory = 0;
+        public Integer subcategory;
         @JsonProperty("type")
         public Integer type;
         @JsonProperty("silent_install")
@@ -132,15 +120,13 @@ public class SynoController {
         public Boolean silentUninstall;
         @JsonProperty("silent_upgrade")
         public Boolean silentUpgrade;
-        //        @JsonProperty("conf_deppkgs")
-//        private String confDepPkgs;
         @JsonProperty("auto_upgrade_from")
         public String autoUpgradeFrom;
         @JsonProperty("beta")
         public Boolean beta;
 
-        public JsonOutput(SynoController controller, SynoPackage synoPackage, String language) {
-            String baseUrl = controller.baseUrl;
+        public JsonOutput(HikariSPKConfig config, SynoPackage synoPackage, String language) {
+            String baseUrl = config.getBaseUrl();
             baseUrl = baseUrl.endsWith("/") ? baseUrl.substring(0, baseUrl.length() - 1) : baseUrl;
             this.packageId = synoPackage.getPackageId();
             this.version = synoPackage.getVersion();
@@ -165,7 +151,7 @@ public class SynoController {
             this.depSers = null;
             if (synoPackage.getInstallDepPackages() != null) {
                 String depPkgs = synoPackage.getInstallDepPackages();
-                for (String excludedSynoService : controller.excludedSynoServices.split(" ")) {
+                for (String excludedSynoService : config.getExcludedSynoServices().split(" ")) {
                     depPkgs = depPkgs.replace(excludedSynoService, "");
                 }
                 depPkgs = depPkgs.trim();
@@ -173,12 +159,12 @@ public class SynoController {
             }
             this.conflictPkgs = synoPackage.getInstallConflictPackages();
             this.start = true;
-            this.maintainer = Objects.requireNonNullElse(synoPackage.getMaintainer(), controller.maintainer);
-            this.maintainerUrl = Objects.requireNonNullElse(synoPackage.getMaintainerUrl(), controller.maintainerUrl);
-            this.distributor = Objects.requireNonNullElse(synoPackage.getDistributor(), controller.distributor);
-            this.distributorUrl = Objects.requireNonNullElse(synoPackage.getDistributorUrl(), controller.distributorUrl);
+            this.maintainer = Objects.requireNonNullElse(synoPackage.getMaintainer(), config.getMaintainer());
+            this.maintainerUrl = Objects.requireNonNullElse(synoPackage.getMaintainerUrl(), config.getMaintainerUrl());
+            this.distributor = Objects.requireNonNullElse(synoPackage.getDistributor(), config.getDistributor());
+            this.distributorUrl = Objects.requireNonNullElse(synoPackage.getDistributorUrl(), config.getDistributorUrl());
             this.changeLog = synoPackage.getChangelog();
-            this.supportUrl = Objects.requireNonNullElse(synoPackage.getSupportUrl(), controller.supportUrl);
+            this.supportUrl = Objects.requireNonNullElse(synoPackage.getSupportUrl(), config.getSupportUrl());
             this.thirdParty = true;
             this.category = 0;
             this.subcategory = 0;

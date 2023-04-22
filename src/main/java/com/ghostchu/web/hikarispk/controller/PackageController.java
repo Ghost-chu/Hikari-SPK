@@ -1,5 +1,6 @@
 package com.ghostchu.web.hikarispk.controller;
 
+import com.ghostchu.web.hikarispk.config.HikariSPKConfig;
 import com.ghostchu.web.hikarispk.exception.ResourceNotFoundException;
 import com.ghostchu.web.hikarispk.packages.SynoPackage;
 import com.ghostchu.web.hikarispk.service.PackageService;
@@ -10,7 +11,6 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -30,9 +30,9 @@ public class PackageController {
     private PackageService packageService;
     @Autowired
     private HttpServletRequest request;
+    @Autowired
+    private HikariSPKConfig hikariSPKConfig;
 
-    @Value("${hikari-spk.packages.allow-direct-downloads}")
-    private boolean allowDirectDownloads;
 
     @RequestMapping(value = "/thumbnail/{packageFileName}", produces = MediaType.IMAGE_PNG_VALUE)
     @ResponseBody
@@ -67,14 +67,13 @@ public class PackageController {
         if (pkgFile == null) {
             throw new ResourceNotFoundException();
         }
-        if (!allowDirectDownloads) {
+        if (!hikariSPKConfig.isAllowDirectDownloads()) {
             String userAgent = request.getHeader("User-Agent");
             if (!userAgent.contains("synology")) {
                 response.sendError(403, "Direct packages downloading from Browser are not allowed");
                 return;
             }
         }
-
 
         try (InputStream fis = new FileInputStream(pkgFile)) {
             response.reset();
