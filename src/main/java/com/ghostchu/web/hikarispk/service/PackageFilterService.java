@@ -32,10 +32,9 @@ public class PackageFilterService {
         YamlConfigurationLoader loader = YamlConfigurationLoader.builder().file(modelsFile).build();
         CommentedConfigurationNode familyList = loader.load();
         LOGGER.info("Loading filter from file {}...", modelsFile.getAbsolutePath());
-        for (CommentedConfigurationNode entry : familyList.childrenMap().values()) {
-            String arch = String.valueOf(entry.key());
-            for (CommentedConfigurationNode family : entry.childrenMap().values()) {
-                family2ArchMap.put(String.valueOf(family.key()), arch);
+        for (CommentedConfigurationNode arch : familyList.childrenMap().values()) {
+            for (CommentedConfigurationNode family : arch.childrenMap().values()) {
+                family2ArchMap.put(String.valueOf(family.key()), String.valueOf(arch.key()));
             }
         }
         LOGGER.info("Found {} synology families.", family2ArchMap.size());

@@ -34,7 +34,6 @@ public class SynoController {
     @GetMapping("/spk")
     @ResponseBody
     public Object spkQuery(@RequestParam("language") String language, @NotBlank @RequestParam("timezone") String timezone, @NotBlank @RequestParam("unique") String unique, @NotBlank @RequestParam("arch") String arch, @NotBlank @RequestParam("major") int major, @NotBlank @RequestParam("minor") int minor, @NotBlank @RequestParam("build") int build, @NotBlank @RequestParam("package_update_channel") String packageUpdateChannel) throws SerializationException {
-        long start = System.currentTimeMillis();
         language = language.trim();
         timezone = timezone.trim();
         unique = unique.trim();
@@ -50,10 +49,6 @@ public class SynoController {
         for (SynoPackage pkg : packageList) {
             outputs.add(new JsonOutput(hikariSPKConfig, pkg, language));
         }
-        long end = System.currentTimeMillis();
-        LOGGER.info("Synology client request accepted ({}ms, {} packages): language={}, timezone={}, " +
-                        "unique={}, arch={}, major={}, minor={}, build={}, package_update_channel={}."
-                , end - start, packageList.size(), language, timezone, unique, arch, major, minor, build, packageUpdateChannel);
         return outputs;
     }
 
