@@ -161,6 +161,9 @@ public class SynoController {
                 depPkgs = depPkgs.trim();
                 this.depPkgs = depPkgs;
             }
+            if(StringUtils.isEmpty(this.depPkgs)) {
+                this.depPkgs = null;
+            }
             this.conflictPkgs = synoPackage.getInstallConflictPackages();
             this.start = true;
             this.maintainer = Objects.requireNonNullElse(synoPackage.getMaintainer(), config.getMaintainer());

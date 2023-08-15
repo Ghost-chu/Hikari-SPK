@@ -27,7 +27,7 @@ public class PackageFilterService {
     public PackageFilterService(@Autowired HikariSPKConfig hikariSPKConfig) throws ConfigurateException, FileNotFoundException {
         File modelsFile = new File(hikariSPKConfig.getDeviceListPath());
         if (!modelsFile.exists()) {
-            throw new FileNotFoundException("Cannot found file: " + modelsFile.getAbsolutePath() + "!");
+            throw new FileNotFoundException("Cannot found file: " + modelsFile.getAbsolutePath() + "! Please download synology_models.yml from our Github repository and put it into "+ modelsFile.getAbsolutePath());
         }
         YamlConfigurationLoader loader = YamlConfigurationLoader.builder().file(modelsFile).build();
         CommentedConfigurationNode familyList = loader.load();

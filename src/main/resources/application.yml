@@ -16,7 +16,7 @@ hikari-spk:
     base-url: "http://example.com:6868" # 基础 URL，必须正确配置
   paths:
     cache: cache # 缓存目录
-    models: conf/synology_models.yaml # Synology 机型配置文件（暂未使用）
+    models: conf/synology_models.yaml # Synology 机型配置文件]
     packages: packages # SPK 包目录，程序将检测和扫描此目录下的 SPK 包
   packages:
     parse-threads: -1 # 解析 SPK 包的线程数，-1 为自动
@@ -35,4 +35,4 @@ hikari-spk:
       append:
         header: "" # SPK 包更新日志头部，可附加额外文字
         footer: "" # SPK 包更新日志尾部，可附加额外文字
-  excludedSynoServices: "apache-sys apache-web mdns samba db applenetwork cron nfs firewall" # 排除的 Synology 服务包
+  excludedSynoServices: "apache-sys apache-web mdns samba db applenetwork cron nfs firewall mysql" # 排除的 Synology 服务包
