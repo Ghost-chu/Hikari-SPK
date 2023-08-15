@@ -31,4 +31,12 @@ public class HikariSPKConfig {
     private String fileMask;
     @Value("${hikari-spk.paths.cache}")
     private String cachePath;
+    @Value("${hikari-spk.packages.description.append.header}")
+    private String pkgDescAppendHeader;
+    @Value("${hikari-spk.packages.description.append.footer}")
+    private String pkgDescAppendFooter;
+    @Value("${hikari-spk.packages.changelog.append.header}")
+    private String pkgChangelogAppendHeader;
+    @Value("${hikari-spk.packages.changelog.append.footer}")
+    private String pkgChangelogAppendFooter;
 }

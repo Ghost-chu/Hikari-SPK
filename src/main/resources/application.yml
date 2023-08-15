@@ -23,4 +23,12 @@ hikari-spk:
     distributor-url: ""
     support-url: ""
     allow-direct-downloads: false
+    description:
+      append:
+        header: ""
+        footer: ""
+    changelog:
+      append:
+        header: ""
+        footer: ""
   excludedSynoServices: "apache-sys apache-web mdns samba db applenetwork cron nfs firewall"

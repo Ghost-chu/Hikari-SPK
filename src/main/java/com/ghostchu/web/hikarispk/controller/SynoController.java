@@ -5,6 +5,7 @@ import com.ghostchu.web.hikarispk.config.HikariSPKConfig;
 import com.ghostchu.web.hikarispk.packages.SynoPackage;
 import com.ghostchu.web.hikarispk.service.PackageFilterService;
 import com.ghostchu.web.hikarispk.service.PackageService;
+import io.micrometer.common.util.StringUtils;
 import jakarta.validation.constraints.NotBlank;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,7 +48,9 @@ public class SynoController {
         packageList = packageFilterService.filter(packageList, arch, packageUpdateChannel, firmwareVersion);
         List<JsonOutput> outputs = new ArrayList<>();
         for (SynoPackage pkg : packageList) {
-            outputs.add(new JsonOutput(hikariSPKConfig, pkg, language));
+            outputs.add(new JsonOutput(hikariSPKConfig, pkg, language,
+                    hikariSPKConfig.getPkgDescAppendHeader(), hikariSPKConfig.getPkgDescAppendFooter(),
+                    hikariSPKConfig.getPkgChangelogAppendHeader(), hikariSPKConfig.getPkgChangelogAppendFooter()));
         }
         return outputs;
     }
@@ -120,13 +123,19 @@ public class SynoController {
         @JsonProperty("beta")
         public Boolean beta;
 
-        public JsonOutput(HikariSPKConfig config, SynoPackage synoPackage, String language) {
+        public JsonOutput(HikariSPKConfig config, SynoPackage synoPackage, String language, String pkgDescAppendHeader, String pkgDescAppendFooter, String pkgChangelogAppendHeader, String pkgChangelogAppendFooter) {
             String baseUrl = config.getBaseUrl();
             baseUrl = baseUrl.endsWith("/") ? baseUrl.substring(0, baseUrl.length() - 1) : baseUrl;
             this.packageId = synoPackage.getPackageId();
             this.version = synoPackage.getVersion();
             this.displayName = synoPackage.getLocalizedDisplayName().getOrDefault(language, synoPackage.getDisplayName());
             this.description = synoPackage.getLocalizedDescription().getOrDefault(language, synoPackage.getDescription());
+            if (StringUtils.isNotEmpty(pkgChangelogAppendHeader)) {
+                this.description = pkgDescAppendHeader + this.description;
+            }
+            if (StringUtils.isNotEmpty(pkgChangelogAppendFooter)) {
+                this.description = this.description + pkgDescAppendFooter;
+            }
             this.price = 0;
             this.downloadCount = 0L;
             this.recentDownloadCount = 0L;
@@ -159,6 +168,12 @@ public class SynoController {
             this.distributor = Objects.requireNonNullElse(synoPackage.getDistributor(), config.getDistributor());
             this.distributorUrl = Objects.requireNonNullElse(synoPackage.getDistributorUrl(), config.getDistributorUrl());
             this.changeLog = synoPackage.getChangelog();
+            if (StringUtils.isNotEmpty(pkgChangelogAppendHeader)) {
+                this.changeLog = pkgChangelogAppendHeader + this.changeLog;
+            }
+            if (StringUtils.isNotEmpty(pkgChangelogAppendFooter)) {
+                this.changeLog = this.changeLog + pkgChangelogAppendFooter;
+            }
             this.supportUrl = Objects.requireNonNullElse(synoPackage.getSupportUrl(), config.getSupportUrl());
             this.thirdParty = true;
             this.category = 0;
