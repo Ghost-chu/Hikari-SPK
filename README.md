@@ -6,6 +6,18 @@
 Hikari-SPK 旨在为了解决 [SSPKS](https://github.com/jdel/sspks) 在大量 SPK 包下运行缓慢，且消耗大量 CPU 和内存的问题。  
 您只需要编辑 `application.yml` 配置基本设置，然后其余的和 [SSPKS](https://github.com/jdel/sspks) 的使用方式一样，将 SPK 包扔进 `packages` 文件夹，Hikari-SPK 将会为它们自动生成元数据。
 
+## 特点
+
+* 高性能
+  * 使用多线程解析 SPK 包
+  * 解析 SPK 包时无需解压到磁盘，不受磁盘 IO 性能和空间影响
+* 安全控制
+  * 可只允许套件中心下载 SPK 包（基于 User-Agent 检测）
+* 自定义
+  * 无需修改 SPK，为套件中心展示的描述和更新日志追加头部/尾部文本
+  * 在 `INFO` 中添加额外字段 `package_override` 可以让 Hikari-SPK 识别两个相同 `package` 的包为两个不同的包，这样就可以在套件中心中同时展示两个相同的包了
+  * 可为无 `maintainer`, `distributor`, `support-url` 等额外元数据的 SPK 包添加默认值（仅套件中心可见）
+
 ## 安装
 
 1. 运行 Hikari-SPK，等待生成 `application.yml` 配置文件后关闭
