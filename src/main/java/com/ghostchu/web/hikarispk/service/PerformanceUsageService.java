@@ -26,7 +26,7 @@ public class PerformanceUsageService {
                 long initMemorySize = memoryUsage.getInit();
                 long maxMemorySize = memoryUsage.getMax();
                 long usedMemorySize = memoryUsage.getUsed();
-                LOGGER.info("Memory usage: {}MB used, {}MB max, {}MB free, {}MB init.",
+                LOGGER.debug("Memory usage: {}MB used, {}MB max, {}MB free, {}MB init.",
                         usedMemorySize / (1024 * 1024),
                         maxMemorySize / (1024 * 1024),
                         (initMemorySize - usedMemorySize) / (1024 * 1024),
@@ -39,7 +39,7 @@ public class PerformanceUsageService {
                     long initMemorySizeAfter = memoryUsageAfter.getInit();
                     long maxMemorySizeAfter = memoryUsageAfter.getMax();
                     long usedMemorySizeAfter = memoryUsageAfter.getUsed();
-                    LOGGER.info("Memory usage (after GC): {}MB used, {}MB max, {}MB free, {}MB init.",
+                    LOGGER.debug("Memory usage (after GC): {}MB used, {}MB max, {}MB free, {}MB init.",
                             usedMemorySizeAfter / (1024 * 1024),
                             maxMemorySizeAfter / (1024 * 1024),
                             (initMemorySizeAfter - usedMemorySizeAfter) / (1024 * 1024),

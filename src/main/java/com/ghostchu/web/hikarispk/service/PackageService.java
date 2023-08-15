@@ -24,7 +24,7 @@ import java.util.concurrent.*;
 
 @Service
 public class PackageService {
-    private static final ExecutorService PACKAGE_PARSING_EXECUTOR = Executors.newFixedThreadPool(2);
+    private final ExecutorService PACKAGE_PARSING_EXECUTOR;
     private static final Logger LOGGER = LoggerFactory.getLogger("PackageService");
     private final HikariSPKConfig hikariSPKConfig;
     private BiMap<File, SynoPackage> discoveredPackages = HashBiMap.create(new ConcurrentHashMap<>());
@@ -32,6 +32,14 @@ public class PackageService {
 
     public PackageService(@Autowired HikariSPKConfig hikariSPKConfig) throws Exception {
         this.hikariSPKConfig = hikariSPKConfig;
+        int parseThreads = hikariSPKConfig.getPkgParseThreads();
+        if(parseThreads == -1) parseThreads = Runtime.getRuntime().availableProcessors();
+        parseThreads--;
+        if(parseThreads<=0){
+            parseThreads = 1;
+        }
+        LOGGER.info("Using {} threads for package parsing.", parseThreads);
+        PACKAGE_PARSING_EXECUTOR = Executors.newFixedThreadPool(parseThreads);
         loadPackages();
         FileAlterationObserver observer = new FileAlterationObserver(hikariSPKConfig.getPackageFolderPath());
         observer.addListener(new FileChangeListener(this, hikariSPKConfig.getFileMask()));
@@ -40,7 +48,7 @@ public class PackageService {
     }
 
     private void loadPackages() {
-        LOGGER.info("Loading packages from disk...");
+        LOGGER.info("Loading packages from disk, please allow up to 360 seconds...");
         long start = System.currentTimeMillis();
         File scanFolder = new File(hikariSPKConfig.getPackageFolderPath());
         if (!scanFolder.exists()) scanFolder.mkdirs();
@@ -57,7 +65,7 @@ public class PackageService {
         for (File file : files) {
             try {
                 if (file.exists()) {
-                    SynoPackage synoPackage = parsePackage(PackageService.PACKAGE_PARSING_EXECUTOR, file);
+                    SynoPackage synoPackage = parsePackage(PACKAGE_PARSING_EXECUTOR, file);
                     if (synoPackage != null) {
                         packages.put(file, synoPackage);
                     }
@@ -89,9 +97,9 @@ public class PackageService {
     public SynoPackage parsePackage(ExecutorService executorService, File file) throws Exception {
         Future<SynoPackage> future = executorService.submit(() -> new SynoPackageParser(new File(hikariSPKConfig.getCachePath()), file).getSynoPackage());
         try {
-            return future.get(30, TimeUnit.SECONDS);
+            return future.get(360, TimeUnit.SECONDS);
         } catch (TimeoutException exception) {
-            LOGGER.warn("The package {} used too much time for parsing! Skipping...", file.getName());
+            LOGGER.warn("The package {} used too much time for parsing (over 360 seconds)! Skipping...", file.getName());
             return null;
         }
     }

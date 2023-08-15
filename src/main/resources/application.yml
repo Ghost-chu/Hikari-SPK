@@ -1,3 +1,6 @@
+# ===== SpringBoot 配置文件 =====
+# 若需要修改生效，请在完成后重新启动 Hikari-SPK 以应用更改。
+
 server:
   port: 6868 #服务监听端口
   compression:
@@ -16,6 +19,7 @@ hikari-spk:
     models: conf/synology_models.yaml # Synology 机型配置文件（暂未使用）
     packages: packages # SPK 包目录，程序将检测和扫描此目录下的 SPK 包
   packages:
+    parse-threads: -1 # 解析 SPK 包的线程数，-1 为自动
     file-mask: "*.spk" # SPK 包文件名匹配规则
     maintainer: "Hikari-SPK" # 当 SPK 包未指定值时，SPK 包默认维护者
     maintainer-url: "" # 当 SPK 包未指定值时，SPK 包默认维护者 URL

@@ -39,4 +39,6 @@ public class HikariSPKConfig {
     private String pkgChangelogAppendHeader;
     @Value("${hikari-spk.packages.changelog.append.footer}")
     private String pkgChangelogAppendFooter;
+    @Value("${hikari-spk.packages.parse-threads}")
+    private int pkgParseThreads;
 }
