@@ -5,6 +5,7 @@ import com.google.common.hash.Hashing;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,8 +55,12 @@ public class SynoPackageParser {
         if (info.get("arch") == null) throw new IllegalArgumentException("arch not found in INFO file");
         if (info.get("maintainer") == null) throw new IllegalArgumentException("maintainer not found in INFO file");
         // read
+        String packageId = info.get("package");
+        if(StringUtils.isNotEmpty(info.get("package_override"))){
+            packageId = info.get("package_override");
+        }
         synoPackage.setFileName(synoPackageFile.getName());
-        synoPackage.setPackageId(info.get("package"));
+        synoPackage.setPackageId(packageId);
         synoPackage.setVersion(info.get("version"));
         synoPackage.setOsMinVer(info.get("os_min_ver"));
         synoPackage.setDescription(info.get("description"));
