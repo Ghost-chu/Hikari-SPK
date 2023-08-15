@@ -1,34 +1,34 @@
 server:
-  port: 6868
+  port: 6868 #服务监听端口
   compression:
-    enabled: true
-    mime-types: text/html,text/xml,text/plain,text/css,text/javascript,application/javascript,application/json
+    enabled: true # 压缩，启用后可以降低服务器出口带宽，响应更快
+    mime-types: text/html,text/xml,text/plain,text/css,text/javascript,application/javascript,application/json # 启用压缩的 MIME 类型
   tomcat:
     threads:
-      max: 4
+      max: 500 # Tomcat 最大线程数，过大或者过小都会影响性能
 hikari-spk:
   site:
-    name: Another HikariSPK Site
-    description: Another HikariSPK Site
-    base-url: "http://example.com:6868"
+    name: Another HikariSPK Site # 站点名称
+    description: Another HikariSPK Site # 站点描述
+    base-url: "http://example.com:6868" # 基础 URL，必须正确配置
   paths:
-    cache: cache
-    models: conf/synology_models.yaml
-    packages: packages
+    cache: cache # 缓存目录
+    models: conf/synology_models.yaml # Synology 机型配置文件（暂未使用）
+    packages: packages # SPK 包目录，程序将检测和扫描此目录下的 SPK 包
   packages:
-    file-mask: "*.spk"
-    maintainer: "Hikari-SPK"
-    maintainer-url: ""
-    distributor: "Hikari-SPK"
-    distributor-url: ""
-    support-url: ""
-    allow-direct-downloads: false
+    file-mask: "*.spk" # SPK 包文件名匹配规则
+    maintainer: "Hikari-SPK" # 当 SPK 包未指定值时，SPK 包默认维护者
+    maintainer-url: "" # 当 SPK 包未指定值时，SPK 包默认维护者 URL
+    distributor: "Hikari-SPK" # 当 SPK 包未指定值时，SPK 包默认分发者
+    distributor-url: "" # 当 SPK 包未指定值时，SPK 包默认分发者 URL
+    support-url: "" # 当 SPK 包未指定值时，SPK 包默认支持 URL
+    allow-direct-downloads: false # 是否允许使用直链下载，禁用后将只允许套件中心下载 SPK 文件，基于 User-Agent 检测
     description:
       append:
-        header: ""
-        footer: ""
+        header: "" # SPK 包描述头部，可附加额外文字
+        footer: "" # SPK 包描述尾部，可附加额外文字
     changelog:
       append:
-        header: ""
-        footer: ""
-  excludedSynoServices: "apache-sys apache-web mdns samba db applenetwork cron nfs firewall"
+        header: "" # SPK 包更新日志头部，可附加额外文字
+        footer: "" # SPK 包更新日志尾部，可附加额外文字
+  excludedSynoServices: "apache-sys apache-web mdns samba db applenetwork cron nfs firewall" # 排除的 Synology 服务包
