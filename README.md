@@ -29,3 +29,6 @@ https://<base-url>/spk
 
 ![QQ图片20230422202417](https://user-images.githubusercontent.com/30802565/233784596-130146f1-52ea-46da-bca2-2d48288e5770.jpg)
 
+## 配置文件
+
+[查看带有注释的默认配置文件](https://github.com/Ghost-chu/Hikari-SPK/blob/master/src/main/resources/application.yml)
