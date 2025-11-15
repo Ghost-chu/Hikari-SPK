@@ -101,6 +101,12 @@ armv8:
         - DS418
         - DS420j
         - RS819
+    rtd1619b:
+        - DS124
+        - DS223
+        - DS223j
+        - DS423
+        - DS423+
         
 comcerto2k:
     comcerto2k:
@@ -189,6 +195,7 @@ x86_64:
         - DS916+
     broadwell:
         - DS3617xs
+        - DS3617xsII
         - FS2017
         - FS3400
         - RS1619xs+
@@ -202,6 +209,7 @@ x86_64:
     broadwellnk:
         - DS1621xs+
         - DS3018xs
+        - DS3622xs+
         - FS1018
         - FS3600
         - RS3621RPxs
@@ -209,8 +217,13 @@ x86_64:
         - RS4021xs+
         - SA3400
         - SA3600
+    broadwellnkv2:
+        - FS3410
+        - SA3410
+        - SA3610
     broadwellntbap:
         - SA3200D
+        - SA3400D
     apollolake:
         - DS1019+
         - DS218+
@@ -257,16 +270,24 @@ x86_64:
         - DS1618+
         - DS1819+
         - DS2419+
+        - DS2419+II
         - DVA3219
+        - DVA3221
         - RS2418+/RS2418RP+
         - RS2818RP+
         - RS820+/RS820RP+
     geminilake:
         - DS220+
+        - DS224+
         - DS420+
+        - DS423+
         - DS720+
         - DS920+
         - DS1520+
+        - DVA1622
+    geminilakenk:
+        - DS225+
+        - DS425+
     dockerx64:
         - DockerDSM
     grantley:
@@ -275,14 +296,36 @@ x86_64:
         - VirtualDSM
     purley:
         - FS6400
+        - HD6500
+    epyc7002:
+        - SA6400
     v1000:
         - DS1621+
         - DS1821+
+        - DS1823xs+
+        - DS2422+
+        - FS2500
+        - RS822+
+        - RS822RP+
         - RS1221+
         - RS1221RP+
         - RS2421+
         - RS2421RP+
+        - RS2423+
+        - RS2423RP+
         - RS2821RP+
+    v1000nk:
+        - DS925+
+        - DS1525+
+        - DS1825+
+        - RS2825RP+
+    r1000:
+        - DS723+
+        - DS923+
+        - DS1522+
+        - RS422+
+    r1000nk:
+        - DS725+
     x86:
         - DS1010+
         - DS1511+
