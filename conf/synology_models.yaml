@@ -182,8 +182,10 @@ x86_64:
         - RS815(RP)+
         - RS1219+
         - RS2416(RP)+
-        - RS2416+/RS2416RP+
-        - RS815+/RS815RP+
+        - RS2416+
+        - RS2416RP+
+        - RS815+
+        - RS815RP+
         - RS818+
         - RS818RP+
     braswell:
@@ -202,7 +204,8 @@ x86_64:
         - RS18017xs+
         - RS3617RPxs
         - RS3617xs+
-        - RS3617(RP)xs
+        - RS3617xs
+        - RS3617RPxs
         - RS3618xs
         - RS4017xs+
         - RS18017xs+
@@ -241,12 +244,15 @@ x86_64:
         - RS18016xs+
         - RS3411(RP)xs
         - RS3412(RP)xs
-        - RS3411xs/RS3411RPxs
-        - RS3412xs/RS3412RPxs
+        - RS3411xs
+        - RS3411RPxs
+        - RS3412xs
+        - RS3412RPxs
         - RS3413xs+
         - RS3614xs+
         - RS3614(RP)xs
-        - RS3614xs/RS3614RPxs
+        - RS3614xs
+        - RS3614RPxs
         - RS3617xs
     cedarview:
         - DS1512+
@@ -257,15 +263,20 @@ x86_64:
         - RS2414(RP)+
         - DS412+
         - DS713+
-        - RS2212/RS2212+
-        - RS2212+/RS2212RP+
+        - RS2212
+        - RS2212+
+        - RS2212+
+        - RS2212RP+
         - RS2414(RP)
         - RS2414(RP)+
-        - RS2414+/RS2414RP+
+        - RS2414+
+        - RS2414RP+
         - RS812(RP)+
-        - RS812+/RS812RP+
+        - RS812+
+        - RS812RP+
         - RS814(RP)+
-        - RS814+/RS814RP+
+        - RS814+
+        - RS814RP+
     denverton:
         - DS1618+
         - DS1819+
@@ -273,9 +284,11 @@ x86_64:
         - DS2419+II
         - DVA3219
         - DVA3221
-        - RS2418+/RS2418RP+
+        - RS2418+
+        - RS2418RP+
         - RS2818RP+
-        - RS820+/RS820RP+
+        - RS820+
+        - RS820RP+
     geminilake:
         - DS220+
         - DS224+
@@ -336,6 +349,8 @@ x86_64:
         - DS712+
         - RS2211+
         - RS2211(RP)+
-        - RS2211+/RS2211RP+
+        - RS2211+
+        - RS2211RP+
         - RS810(RP)+
-        - RS810+/RS810RP+
+        - RS810+
+        - RS810RP+
