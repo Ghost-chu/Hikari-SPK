@@ -7,6 +7,7 @@ import com.ghostchu.web.hikarispk.service.PackageService;
 import com.google.common.collect.BiMap;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
@@ -23,6 +24,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.Map;
 
+@Slf4j
 @Controller
 @RequestMapping("/package")
 public class PackageController {
@@ -74,7 +76,7 @@ public class PackageController {
                 return;
             }
         }
-
+        log.info("Serving package file download: {} for IP: {}, User-Agent: {}", pkgFile.getName(), request.getRemoteAddr(), request.getHeader("User-Agent"));
         try (InputStream fis = new FileInputStream(pkgFile)) {
             response.reset();
             response.setCharacterEncoding("UTF-8");

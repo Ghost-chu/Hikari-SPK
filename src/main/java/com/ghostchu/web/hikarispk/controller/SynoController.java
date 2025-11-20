@@ -7,6 +7,7 @@ import com.ghostchu.web.hikarispk.service.PackageFilterService;
 import com.ghostchu.web.hikarispk.service.PackageService;
 import io.micrometer.common.util.StringUtils;
 import jakarta.validation.constraints.NotBlank;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.spongepowered.configurate.serialize.SerializationException;
@@ -22,6 +23,7 @@ import java.util.Map;
 import java.util.Objects;
 
 @RestController
+@Slf4j
 public class SynoController {
     private static final Logger LOGGER = LoggerFactory.getLogger("SynoController");
     @Autowired
@@ -52,6 +54,7 @@ public class SynoController {
                     hikariSPKConfig.getPkgDescAppendHeader(), hikariSPKConfig.getPkgDescAppendFooter(),
                     hikariSPKConfig.getPkgChangelogAppendHeader(), hikariSPKConfig.getPkgChangelogAppendFooter()));
         }
+       log.info("Providing manifest to {} (firmware: {}, arch: {}, channel: {}), {} packages found.", unique, firmwareVersion, arch, packageUpdateChannel, outputs.size());
         return outputs;
     }
 
